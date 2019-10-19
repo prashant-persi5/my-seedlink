@@ -1,8 +1,12 @@
 <template>
   <section>
-    <h1 class="pg-title">{{subreddit.name}}</h1>
-    <button @click="showForm = !showForm" class="button is-primary">Toggle Post Form</button>
-    <form @submit.prevent="onCreatePost()" v-if="showForm">
+    <h1 class="pg-title title">{{subreddit.name}}</h1>
+    <button
+      v-if="isLoggedIn"
+      @click="showForm = !showForm"
+      class="button is-primary"
+    >Toggle Post Form</button>
+    <form v-if="showForm && isLoggedIn" @submit.prevent="onCreatePost()">
       <b-field label="Title">
         <b-input v-model="post.title" required></b-input>
       </b-field>
@@ -16,16 +20,18 @@
     </form>
 
     <div class="posts">
-      <article class="media" v-for="post in posts" :key="post.id">
+      <article class="media" v-for="(post, index) in posts" :key="post.id">
         <figure class="media-left">
           <p class="image is-64x64 user-avatar">
-            <img src="https://bulma.io/images/placeholders/128x128.png">
+            <img :src="loadedUsersById[post.user_id].image">
           </p>
         </figure>
         <div class="media-content">
           <div class="content">
             <p>
-              <strong>{{post.title}}</strong> &nbsp; <small>@johnsmith</small> &nbsp; <small>{{post.created_at}}</small>
+              <strong>{{post.title}}</strong> &nbsp;
+              <small>@{{loadedUsersById[post.user_id].name}}</small> &nbsp;
+              <small>{{getCreated(index)}}</small>
               <br>
               {{post.description}}
             </p>
@@ -64,6 +70,7 @@ export default {
   }),
   mounted() {
     this.initSubreddit(this.$route.params.name);
+    this.initUsers();
   },
   watch: {
     '$route.params.name'() {
@@ -77,13 +84,27 @@ export default {
   },
   computed: {
     ...mapState('subreddit', ['posts']),
-    ...mapGetters('subreddit', ['subreddit']),
+    ...mapState('auth', ['isLoggedIn', 'user']),
+    ...mapGetters({
+      subreddit: 'subreddit/subreddit',
+      usersById: 'users/usersById',
+    }),
+    loadedUsersById() {
+      return this.posts.reduce((byId, post) => {
+        byId[post.user_id] = this.usersById[post.user_id] || {
+          name: 'Loading...',
+          image: 'https://bulma.io/images/placeholders/128x128.png',
+        };
+        return byId;
+      }, {});
+    },
   },
   methods: {
     isImage(url) {
       return url.match(/(png|jpg|jpeg|gif)$/);
     },
     ...mapActions('subreddit', ['createPost', 'initSubreddit', 'initPosts']),
+    ...mapActions('users', { initUsers: 'init' }),
     async onCreatePost() {
       if (this.post.title && (this.post.description || this.post.URL)) {
         this.createPost(this.post);
@@ -95,6 +116,34 @@ export default {
         this.showForm = false;
       }
     },
+    getCreated(index) {
+      function timeSince(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+        if (interval > 1) {
+          return interval + ' years';
+        }
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) {
+          return interval + ' months';
+        }
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) {
+          return interval + ' days';
+        }
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) {
+          return interval + ' hours';
+        }
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) {
+          return interval + ' minutes';
+        }
+        return Math.floor(seconds) + ' seconds';
+      }
+      const getSince = timeSince(this.posts[index].created_at.seconds * 1000);
+      return getSince < 0 ? '0 seconds' : getSince;
+    },
   },
 };
 </script>
@@ -105,5 +154,9 @@ export default {
 }
 .posts {
   margin-top: 2em;
+}
+article.media {
+  border: 1px solid #f1f1f1;
+  padding: 10px;
 }
 </style>

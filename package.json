@@ -44,7 +44,9 @@
       "no-shadow": "off",
       "no-confusing-arrow": "off",
       "import/extensions": "off",
-      "prefer-destructuring": "off"
+      "prefer-destructuring": "off",
+      "prefer-template": "off",
+      "object-shorthand": "off"
     },
     "parserOptions": {
       "parser": "babel-eslint"

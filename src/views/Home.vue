@@ -6,12 +6,3 @@
     </router-link>
   </div>
 </template>
-
-<script>
-import { mapActions, mapState } from 'vuex';
-
-export default {
-  name: 'home',
-  methods: mapActions('auth', ['login']),
-};
-</script>
