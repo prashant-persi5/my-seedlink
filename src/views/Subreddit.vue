@@ -19,11 +19,16 @@
       <button class="button is-success">Add Post</button>
     </form>
 
-    <form class="search-form">
-      <b-field label="Search">
-        <b-input v-model="searchTerm"></b-input>
-      </b-field>
-    </form>
+    <div class="field has-addons search-section">
+      <div class="control">
+        <input v-model="searchTerm" class="input" type="text" placeholder="Search Posts">
+      </div>
+      <div class="control">
+        <a class="button is-info">
+          Search
+        </a>
+      </div>
+    </div>
 
     <div class="posts">
       <article class="media" v-for="(post, index) in filteredPosts" :key="post.id">
@@ -163,8 +168,8 @@ export default {
 </script>
 
 <style>
-.search-form {
-  margin-top: 2em;
+.search-section {
+  margin-top: 1em;
 }
 .pg-title {
   text-transform: capitalize;
