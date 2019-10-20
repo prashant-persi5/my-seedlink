@@ -23,6 +23,9 @@ const actions = {
     post.updated_at = firebase.firestore.FieldValue.serverTimestamp();
     posts.doc(post.id).set(post);
   },
+  async deletePost(_, postId) {
+    await posts.doc(postId).delete();
+  },
   initSubreddit: firestoreAction(({ bindFirestoreRef }, name) => {
     bindFirestoreRef('subreddits', db.collection('subreddits').where('name', '==', name));
   }),

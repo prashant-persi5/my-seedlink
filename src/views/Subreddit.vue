@@ -6,7 +6,7 @@
       @click="showForm = !showForm"
       class="button is-primary"
     >Toggle Post Form</button>
-    <form v-if="showForm && isLoggedIn" @submit.prevent="onCreatePost()">
+    <form class="post-form" v-if="showForm && isLoggedIn" @submit.prevent="onCreatePost()">
       <b-field label="Title">
         <b-input v-model="post.title" required></b-input>
       </b-field>
@@ -40,7 +40,12 @@
         <div class="media-content">
           <div class="content">
             <p>
-              <strong>{{post.title}}</strong> &nbsp;
+              <strong>
+                <router-link
+                  :to="{ name: 'post', params: {post_id: post.id} }">
+                  {{post.title}}
+                </router-link>                
+              </strong> &nbsp;
               <small>@{{loadedUsersById[post.user_id].name}}</small> &nbsp;
               <small>{{getCreated(index)}}</small>
               <br>
@@ -60,6 +65,9 @@
               </a>
             </div>
           </nav>
+        </div>
+        <div class="media-right" v-if="user && user.id == post.user_id">
+          <button @click="deletePost(post.id)" class="delete" title="Delete"></button>
         </div>
       </article>
     </div>
@@ -122,7 +130,7 @@ export default {
     isImage(url) {
       return url.match(/(png|jpg|jpeg|gif)$/);
     },
-    ...mapActions('subreddit', ['createPost', 'initSubreddit', 'initPosts']),
+    ...mapActions('subreddit', ['createPost', 'deletePost', 'initSubreddit', 'initPosts']),
     ...mapActions('users', { initUsers: 'init' }),
     async onCreatePost() {
       if (this.post.title && (this.post.description || this.post.URL)) {
@@ -168,6 +176,11 @@ export default {
 </script>
 
 <style>
+.post-form {
+    border: 1px solid #f1f1f1;
+    padding: 20px;
+    margin-top: 1em;
+}
 .search-section {
   margin-top: 1em;
 }
