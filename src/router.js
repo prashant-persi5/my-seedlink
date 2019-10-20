@@ -13,24 +13,24 @@ export default new Router({
       name: 'home',
       component: Home,
       meta: {
-        title: "My Seedlink",
-      }
+        title: 'My Seedlink',
+      },
     },
     {
       path: '/subreddits',
       name: 'subreddits',
       component: Subreddits,
       meta: {
-        title: "Subreddits",
-      }
+        title: 'Subreddits',
+      },
     },
     {
       path: '/r/:name',
       name: 'subreddit',
       component: Subreddit,
       meta: {
-        title: "Subreddit",
-      }
+        title: 'Subreddit',
+      },
     },
   ],
 });

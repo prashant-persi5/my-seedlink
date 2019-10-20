@@ -8,7 +8,7 @@ const state = {
 
 const mutations = {
   setUser(state, user) {
-    if(user) {
+    if (user) {
       state.user = user;
       state.isLoggedIn = true;
     } else {

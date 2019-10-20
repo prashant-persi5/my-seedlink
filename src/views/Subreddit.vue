@@ -19,8 +19,14 @@
       <button class="button is-success">Add Post</button>
     </form>
 
+    <form class="search-form">
+      <b-field label="Search">
+        <b-input v-model="searchTerm"></b-input>
+      </b-field>
+    </form>
+
     <div class="posts">
-      <article class="media" v-for="(post, index) in posts" :key="post.id">
+      <article class="media" v-for="(post, index) in filteredPosts" :key="post.id">
         <figure class="media-left">
           <p class="image is-64x64 user-avatar">
             <img :src="loadedUsersById[post.user_id].image">
@@ -62,6 +68,7 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 export default {
   data: () => ({
     showForm: false,
+    searchTerm: '',
     post: {
       title: '',
       description: '',
@@ -97,6 +104,13 @@ export default {
         };
         return byId;
       }, {});
+    },
+    filteredPosts() {
+      if (this.searchTerm) {
+        const regexp = new RegExp(this.searchTerm, 'gi');
+        return this.posts.filter(post => (post.title + post.description).match(regexp));
+      }
+      return this.posts;
     },
   },
   methods: {
@@ -142,13 +156,16 @@ export default {
         return Math.floor(seconds) + ' seconds';
       }
       const getSince = timeSince(this.posts[index].created_at.seconds * 1000);
-      return getSince < 0 ? '0 seconds' : getSince;
+      return getSince < 0 ? '0 seconds ago' : getSince + ' ago';
     },
   },
 };
 </script>
 
 <style>
+.search-form {
+  margin-top: 2em;
+}
 .pg-title {
   text-transform: capitalize;
 }

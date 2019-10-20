@@ -16,9 +16,9 @@ Vue.config.productionTip = false;
 Vue.use(Buefy);
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title
-  next()
-})
+  document.title = to.meta.title;
+  next();
+});
 
 new Vue({
   router,
